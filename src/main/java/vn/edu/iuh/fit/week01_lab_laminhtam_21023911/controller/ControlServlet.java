@@ -24,26 +24,30 @@ public class ControlServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PrintWriter printWriter = resp.getWriter();
-        String action = req.getParameter("action");
+        try {
+            PrintWriter printWriter = resp.getWriter();
+            String action = req.getParameter("action");
 
-        switch (action) {
-            case "login":
-                String username = req.getParameter("username");
-                String password = req.getParameter("password");
-                Optional<Account> account = accountRepository.findByEmail(username);
-                if (account.isEmpty()) {
-                    printWriter.println("Wrong email");
-                } else {
-                    if (!validatePassword(password, account.get())) {
-                        printWriter.println("Wrong password");
+            switch (action) {
+                case "login":
+                    String username = req.getParameter("username");
+                    String password = req.getParameter("password");
+                    Optional<Account> account = accountRepository.findByEmail(username);
+                    if (account.isEmpty()) {
+                        printWriter.println("Wrong email");
                     } else {
-                        req.setAttribute("account", account.get());
-                        RequestDispatcher rd = req.getRequestDispatcher("dashboard.jsp");
-                        rd.forward(req, resp);
+                        if (!validatePassword(password, account.get())) {
+                            printWriter.println("Wrong password");
+                        } else {
+                            req.setAttribute("account", account.get());
+                            RequestDispatcher rd = req.getRequestDispatcher("dashboard.jsp");
+                            rd.forward(req, resp);
+                        }
                     }
-                }
-                break;
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
