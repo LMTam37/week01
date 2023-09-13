@@ -1,5 +1,6 @@
 package vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository;
 
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.connectDB.ConnectionDB;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Account;
 
 import java.sql.Connection;
@@ -9,13 +10,7 @@ import java.sql.ResultSet;
 import java.util.Optional;
 
 public class AccountRepository {
-    Connection connection;
-
-    public AccountRepository() throws Exception {
-        Class.forName("org.mariadb.jdbc.Driver");
-        String url = "jdbc:mariadb://localhost:3306/mydb";
-        connection = DriverManager.getConnection(url, "root", "sapassword");
-    }
+    Connection connection = ConnectionDB.getConnection();
 
     public Optional<Account> findById(Long id) throws Exception {
         String sql = "select * from Account where account_id = ?";

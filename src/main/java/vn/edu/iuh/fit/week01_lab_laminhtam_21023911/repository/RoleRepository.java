@@ -1,5 +1,6 @@
 package vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository;
 
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.connectDB.ConnectionDB;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Account;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Role;
 
@@ -7,13 +8,7 @@ import java.sql.*;
 import java.util.Optional;
 
 public class RoleRepository {
-    Connection connection;
-
-    public RoleRepository() throws Exception {
-        Class.forName("org.mariadb.jdbc.Driver");
-        String url = "jdbc:mariadb://localhost:3306/mydb";
-        connection = DriverManager.getConnection(url, "root", "sapassword");
-    }
+    Connection connection = ConnectionDB.getConnection();
 
     public Optional<Role> findById(Long id) throws Exception {
         String sql = "select * form Role where role_id = ?";
