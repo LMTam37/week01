@@ -7,10 +7,30 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AccountRepository {
     Connection connection = ConnectionDB.getConnection();
+
+    public List<Account> findAll() throws Exception {
+        List<Account> accounts = new ArrayList<>();
+        String sql = "select * from Account";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Long account_id = rs.getLong(1);
+            String fullName = rs.getString(2);
+            String password = rs.getString(3);
+            String email = rs.getString(4);
+            String phone = rs.getString(5);
+            int status = rs.getInt(6);
+            Account account = new Account(account_id, fullName, password, email, phone, status);
+            accounts.add(account);
+        }
+        return accounts;
+    }
 
     public Optional<Account> findById(Long id) throws Exception {
         String sql = "select * from Account where account_id = ?";
@@ -30,7 +50,7 @@ public class AccountRepository {
         return Optional.empty();
     }
 
-    public Optional<Account> findByEmail(String userEmail) throws Exception{
+    public Optional<Account> findByEmail(String userEmail) throws Exception {
         String sql = "select * from Account where email = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, userEmail);
