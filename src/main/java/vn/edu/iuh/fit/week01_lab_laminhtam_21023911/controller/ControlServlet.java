@@ -25,30 +25,34 @@ public class ControlServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            PrintWriter printWriter = resp.getWriter();
             String action = req.getParameter("action");
 
             switch (action) {
                 case "login":
-                    String username = req.getParameter("username");
-                    String password = req.getParameter("password");
-                    Optional<Account> account = accountRepository.findByEmail(username);
-                    if (account.isEmpty()) {
-                        printWriter.println("Wrong email");
-                    } else {
-                        if (!validatePassword(password, account.get())) {
-                            printWriter.println("Wrong password");
-                        } else {
-                            req.setAttribute("account", account.get());
-                            RequestDispatcher rd = req.getRequestDispatcher("dashboard.jsp");
-                            rd.forward(req, resp);
-                        }
-                    }
+                    handleLogin(req, resp);
                     break;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean handleLogin(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        Optional<Account> account = accountRepository.findByEmail(username);
+        if (account.isEmpty()) {
+            resp.getWriter().println("Wrong email");
+            return false;
+        }
+        if (!validatePassword(password, account.get())) {
+            resp.getWriter().println("Wrong password");
+            return false;
+        }
+        req.setAttribute("account", account.get());
+        RequestDispatcher rd = req.getRequestDispatcher("dashboard.jsp");
+        rd.forward(req, resp);
+        return true;
     }
 
     private boolean validatePassword(String inputPassword, Account account) {
