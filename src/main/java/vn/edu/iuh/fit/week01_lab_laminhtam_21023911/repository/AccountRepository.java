@@ -30,6 +30,28 @@ public class AccountRepository {
         return Optional.empty();
     }
 
+    public Optional<Account> findByEmail(String userEmail) {
+        try {
+            String sql = "select * from Account where email = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, userEmail);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Long account_id = rs.getLong(1);
+                String fullName = rs.getString(2);
+                String password = rs.getString(3);
+                String email = rs.getString(4);
+                String phone = rs.getString(5);
+                int status = rs.getInt(6);
+                Account account = new Account(account_id, fullName, password, email, phone, status);
+                return Optional.of(account);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
     public int add(Account account) throws Exception {
         String sql = "insert into Account values( ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
