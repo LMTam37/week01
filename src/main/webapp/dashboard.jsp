@@ -17,10 +17,10 @@
             case 1:
                 status = "active";
                 break;
-            case 2:
+            case 0:
                 status = "deactive";
                 break;
-            case 3:
+            case -1:
                 status = "xóa";
                 break;
         }
