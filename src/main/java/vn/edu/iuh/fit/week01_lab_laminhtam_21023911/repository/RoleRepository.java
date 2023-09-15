@@ -32,6 +32,32 @@ public class RoleRepository {
         return roles;
     }
 
+    public List<Role> findRolesByAccountId(Long accountId) {
+        List<Role> roles = new ArrayList<>();
+        String sql = "SELECT Role.* FROM Role JOIN grant_access ON Role.role_id = grant_access.role_id WHERE grant_access.account_id = ? AND grant_access.is_grant = 1";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setLong(1, accountId);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Long role_id = rs.getLong(1);
+                String name = rs.getString(2);
+                String desc = rs.getString(3);
+                int status = rs.getInt(4);
+                Role role = new Role(role_id, name, desc, status);
+                roles.add(role);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return roles;
+    }
+
+
     public Optional<Role> findById(Long id) throws Exception {
         String sql = "select * form Role where role_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);

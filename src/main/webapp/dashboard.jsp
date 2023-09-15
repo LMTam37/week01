@@ -93,9 +93,17 @@
 
         modalHtml.append("<p>Roles:</p>");
 
+        List<Role> accountRoles = roleRepository.findRolesByAccountId(curAccount.getAccount_id());
+
         for (Role role : allRoles) {
             modalHtml.append("<div class=\"form-check form-check-inline\">")
-                    .append("<input class=\"form-check-input\" id=\"account").append(curAccount.getAccount_id()).append("Role").append(role.getRole_id()).append("\" type=\"checkbox\" name=\"roles\" value=\"").append(role.getRole_id()).append("\"/>")
+                    .append("<input class=\"form-check-input\" id=\"account").append(curAccount.getAccount_id()).append("Role").append(role.getRole_id()).append("\" type=\"checkbox\" name=\"roles\" value=\"").append(role.getRole_id()).append("\"");
+
+            if (accountRoles.contains(role)) {
+                modalHtml.append(" checked");
+            }
+
+            modalHtml.append(">")
                     .append("<label class=\"form-check-label\" for=\"account").append(curAccount.getAccount_id()).append("Role").append(role.getRole_id()).append("\">")
                     .append(role.getRole_name())
                     .append("</label>")

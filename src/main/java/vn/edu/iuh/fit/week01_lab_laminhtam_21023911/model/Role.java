@@ -1,10 +1,35 @@
 package vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model;
 
+import java.util.Objects;
+
 public class Role {
     private Long role_id;
     private String role_name;
     private String description;
     private int status;
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "role_id=" + role_id +
+                ", role_name='" + role_name + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(role_id, role.role_id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(role_id);
+    }
 
     public Role() {
     }
