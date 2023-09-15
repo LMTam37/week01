@@ -69,13 +69,14 @@ public class AccountRepository {
     }
 
     public int add(Account account) throws Exception {
-        String sql = "insert into Account values( ?, ?, ?, ?, ?)";
+        String sql = "insert into Account values( ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, account.getFullName());
-        ps.setString(2, account.getPassword());
-        ps.setString(3, account.getEmail());
-        ps.setString(4, account.getPhone());
-        ps.setInt(5, account.getStatus());
+        ps.setLong(1, account.getAccount_id());
+        ps.setString(2, account.getFullName());
+        ps.setString(3, account.getPassword());
+        ps.setString(4, account.getEmail());
+        ps.setString(5, account.getPhone());
+        ps.setInt(6, account.getStatus());
         return ps.executeUpdate();
     }
 
