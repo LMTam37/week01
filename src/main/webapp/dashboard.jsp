@@ -71,7 +71,27 @@
                 .append("<label for=\"phoneInput\" class=\"form-label\">Phone</label>")
                 .append("<input class=\"form-control\" id=\"phoneInput\" name=\"phone\" type=\"text\" value=\"").append(curAccount.getPhone()).append("\">")
                 .append("</div>")
-                .append("<p>Status: ").append(getStatusString(curAccount.getStatus())).append("</p>");
+                .append("<p>Status:</p>")
+                .append("<div class=\"form-check form-check-inline\">")
+                .append("<input class=\"form-check-input\" type=\"radio\" id=\"activeRadio").append(curAccount.getAccount_id()).append("\" name=\"status\" value=\"1\" ")
+                .append(curAccount.getStatus() == 1 ? "checked" : "")
+                .append(">")
+                .append("<label class=\"form-check-label\" for=\"activeRadio").append(curAccount.getAccount_id()).append("\">Active</label>")
+                .append("</div>")
+                .append("<div class=\"form-check form-check-inline\">")
+                .append("<input class=\"form-check-input\" type=\"radio\" id=\"deactiveRadio").append(curAccount.getAccount_id()).append("\" name=\"status\" value=\"0\" ")
+                .append(curAccount.getStatus() == 0 ? "checked" : "")
+                .append(">")
+                .append("<label class=\"form-check-label\" for=\"deactiveRadio").append(curAccount.getAccount_id()).append("\">Deactive</label>")
+                .append("</div>")
+                .append("<div class=\"form-check form-check-inline\">")
+                .append("<input class=\"form-check-input\" type=\"radio\" id=\"xoaRadio").append(curAccount.getAccount_id()).append("\" name=\"status\" value=\"-1\" ")
+                .append(curAccount.getStatus() == -1 ? "checked" : "")
+                .append(">")
+                .append("<label class=\"form-check-label\" for=\"xoaRadio").append(curAccount.getAccount_id()).append("\">Xóa</label>")
+                .append("</div>");
+
+        modalHtml.append("<p>Roles:</p>");
 
         for (Role role : allRoles) {
             modalHtml.append("<div class=\"form-check form-check-inline\">")

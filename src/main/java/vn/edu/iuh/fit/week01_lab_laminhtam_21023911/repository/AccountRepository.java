@@ -85,13 +85,14 @@ public class AccountRepository {
     }
 
     public int updateAccount(Account account) throws Exception {
-        String sql = "update Account set fullname = ?, password = ?, email = ?, phone = ? where account_id = ?";
+        String sql = "update Account set fullname = ?, password = ?, email = ?, phone = ?, status = ? where account_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, account.getFullName());
         ps.setString(2, account.getPassword());
         ps.setString(3, account.getEmail());
         ps.setString(4, account.getPhone());
-        ps.setLong(5, account.getAccount_id());
+        ps.setInt(5, account.getStatus());
+        ps.setLong(6, account.getAccount_id());
         return ps.executeUpdate();
     }
 

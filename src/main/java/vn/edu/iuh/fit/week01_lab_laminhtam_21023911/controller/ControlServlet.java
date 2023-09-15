@@ -58,7 +58,8 @@ public class ControlServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         String phone = req.getParameter("phone");
-        return new Account(id, fullName, password, email, phone, 1);
+        int status = Integer.parseInt(req.getParameter("status"));
+        return new Account(id, fullName, password, email, phone, status);
     }
 
     private boolean handleUpdateAccount(HttpServletRequest req, HttpServletResponse resp) {
