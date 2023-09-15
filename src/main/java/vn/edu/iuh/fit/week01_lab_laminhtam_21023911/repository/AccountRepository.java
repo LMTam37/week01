@@ -14,20 +14,24 @@ import java.util.Optional;
 public class AccountRepository {
     Connection connection = ConnectionDB.getConnection();
 
-    public List<Account> findAll() throws Exception {
+    public List<Account> findAll() {
         List<Account> accounts = new ArrayList<>();
         String sql = "select * from Account";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Long account_id = rs.getLong(1);
-            String fullName = rs.getString(2);
-            String password = rs.getString(3);
-            String email = rs.getString(4);
-            String phone = rs.getString(5);
-            int status = rs.getInt(6);
-            Account account = new Account(account_id, fullName, password, email, phone, status);
-            accounts.add(account);
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Long account_id = rs.getLong(1);
+                String fullName = rs.getString(2);
+                String password = rs.getString(3);
+                String email = rs.getString(4);
+                String phone = rs.getString(5);
+                int status = rs.getInt(6);
+                Account account = new Account(account_id, fullName, password, email, phone, status);
+                accounts.add(account);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return accounts;
     }

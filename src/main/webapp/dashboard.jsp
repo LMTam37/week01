@@ -2,6 +2,11 @@
 <%@ page import="java.io.PrintWriter" %>
 <%@ page import="vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.AccountRepository" %>
 <%@ page import="java.util.List" %>
+<%@ page import="vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Grant_access" %>
+<%@ page import="vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.Grant_accessRepository" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Role" %>
+<%@ page import="vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.RoleRepository" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -31,12 +36,57 @@
     }
 %>
 
+<%!
+    public List<Long> getGrantedRoleIdsForAccount(Long accountId) {
+        List<Long> grantedRoles = new ArrayList<>();
+        for (Grant_access grantAccess : allGrantAccesses) {
+            if (grantAccess.getAccount_id().equals(accountId) && grantAccess.isIs_grant()) {
+                grantedRoles.add(grantAccess.getRole_id());
+            }
+        }
+        return grantedRoles;
+    }
+%>
+
+<%!
+    public String getRoleNameById(Long roleId) {
+        for (Role role : allRoles) {
+            if (role.getRole_id().equals(roleId)) {
+                return role.getRole_name();
+            }
+        }
+        return "";
+    }
+%>
+
+<%!
+    public String getRoleNamesForAccount(Long accountId) {
+        List<String> roleNames = new ArrayList<>();
+        List<Long> grantedRoleIds = getGrantedRoleIdsForAccount(accountId);
+        for (Long roleId : grantedRoleIds) {
+            String roleName = getRoleNameById(roleId);
+            if (!roleName.isEmpty()) {
+                roleNames.add(roleName);
+            }
+        }
+        return String.join(",", roleNames);
+    }
+%>
+
+<%!
+    AccountRepository accountRepository = new AccountRepository();
+    Grant_accessRepository grantAccessRepository = new Grant_accessRepository();
+    RoleRepository roleRepository = new RoleRepository();
+    List<Account> allAccount = accountRepository.findAll();
+    List<Grant_access> allGrantAccesses = grantAccessRepository.findAll();
+    List<Role> allRoles = roleRepository.findAll();
+%>
+
 <%
     Account account = (Account) session.getAttribute("account");
     PrintWriter printWriter = response.getWriter();
-    AccountRepository accountRepository = new AccountRepository();
-    List<Account> accounts = accountRepository.findAll();
 %>
+
 <p>id: <%= account.getAccount_id() %>
 </p>
 <p>fullName: <%= account.getFullName() %>
@@ -67,7 +117,7 @@
                         <input type="hidden" name="action" value="add-account">
                         <label for="account_idInput" class="form-label">Id</label>
                         <input type="text" class="form-control" name="account_id" id="account_idInput"
-                               value="<%= accounts.size() + 1 %>"
+                               value="<%= allAccount.size() + 1 %>"
                                readonly>
                         <label for="emailInput" class="form-label">Email address</label>
                         <input type="email" class="form-control" name="email" id="emailInput"
@@ -97,12 +147,13 @@
     <th>email</th>
     <th>phone</th>
     <th>status</th>
+    <th>role</th>
     </thead>
     <tbody>
     <%
-        int length = accounts.size();
+        int length = allAccount.size();
         for (int i = 0; i < length; i++) {
-            Account curAccount = accounts.get(i);
+            Account curAccount = allAccount.get(i);
     %>
     <tr>
         <td>
@@ -122,6 +173,9 @@
         </td>
         <td>
             <%= getStatusString(curAccount.getStatus())%>
+        </td>
+        <td>
+            <%= getRoleNamesForAccount(curAccount.getAccount_id()) %>
         </td>
     </tr>
     <%

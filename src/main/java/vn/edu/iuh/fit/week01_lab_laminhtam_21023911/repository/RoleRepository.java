@@ -5,10 +5,32 @@ import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Account;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Role;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class RoleRepository {
     Connection connection = ConnectionDB.getConnection();
+
+    public List<Role> findAll() {
+        List<Role> roles = new ArrayList<>();
+        String sql = "select * from Role";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Long role_id = rs.getLong(1);
+                String name = rs.getString(2);
+                String desc = rs.getString(3);
+                int status = rs.getInt(4);
+                Role role = new Role(role_id, name, desc, status);
+                roles.add(role);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return roles;
+    }
 
     public Optional<Role> findById(Long id) throws Exception {
         String sql = "select * form Role where role_id = ?";
