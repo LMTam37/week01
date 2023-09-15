@@ -96,6 +96,9 @@ public class ControlServlet extends HttpServlet {
     private boolean handleAddAccount(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         Account account = extractAccountFromRequest(req);
 
+        String[] selectedRoles = req.getParameterValues("roles");
+        addGrantAccess(account.getAccount_id(), selectedRoles);
+
         if (!validateNewAccount(account)) {
             resp.getWriter().println("Account already exists");
             return false;
@@ -104,6 +107,18 @@ public class ControlServlet extends HttpServlet {
         RequestDispatcher rd = req.getRequestDispatcher("dashboard.jsp");
         rd.forward(req, resp);
         return true;
+    }
+
+    private void addGrantAccess(Long accountId, String[] selectedRoles) throws Exception {
+        List<Role> allRoles = roleRepository.findAll();
+
+        for (Role role : allRoles) {
+            Long roleId = role.getRole_id();
+            boolean isCheck = Arrays.asList(selectedRoles).contains(roleId.toString());
+
+            Grant_access grantAccess = new Grant_access(accountId, roleId, isCheck, "");
+            grantAccessRepository.add(grantAccess);
+        }
     }
 
     private boolean validateNewAccount(Account account) throws Exception {

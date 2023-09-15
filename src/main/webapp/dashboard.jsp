@@ -200,17 +200,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form action="ControlServlet" method="post">
+                <input type="hidden" name="action" value="add-account">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="modalTitle">Add New Account</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <input type="hidden" name="action" value="add-account">
                         <label for="account_idInput" class="form-label">Id</label>
                         <input type="text" class="form-control" name="account_id" id="account_idInput"
                                value="<%= allAccount.size() + 1 %>"
-                               readonly>
+                        >
                         <label for="emailInput" class="form-label">Email address</label>
                         <input type="email" class="form-control" name="email" id="emailInput"
                                placeholder="name@example.com">
@@ -220,6 +220,40 @@
                         <input class="form-control" name="password" id="passwordInput">
                         <label for="phoneInput" class="form-label">Phone</label>
                         <input class="form-control" name="phone" id="phoneInput">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="1" id="activeRadio"
+                                       checked>
+                                <label class="form-check-label" for="activeRadio">
+                                    Active
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="0" id="deactiveRadio">
+                                <label class="form-check-label" for="deactiveRadio">
+                                    Inactive
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="-1" id="deletedRadio">
+                                <label class="form-check-label" for="deletedRadio">
+                                    Deleted
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Roles</label>
+                            <% for (Role role : allRoles) { %>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="roles"
+                                       value="<%= role.getRole_id() %>" id="role<%= role.getRole_id() %>Checkbox">
+                                <label class="form-check-label" for="role<%= role.getRole_id() %>Checkbox">
+                                    <%= role.getRole_name() %>
+                                </label>
+                            </div>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

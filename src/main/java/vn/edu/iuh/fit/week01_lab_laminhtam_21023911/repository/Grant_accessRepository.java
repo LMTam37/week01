@@ -53,7 +53,7 @@ public class Grant_accessRepository {
     }
 
     public int add(Grant_access grantAccess) throws Exception {
-        String sql = "insert into Grant_access values (?,?,?,?,?,?)";
+        String sql = "insert into Grant_access values (?,?,?,?)";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setLong(1, grantAccess.getAccount_id());
         ps.setLong(2, grantAccess.getRole_id());
