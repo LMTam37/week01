@@ -180,6 +180,13 @@
     PrintWriter printWriter = response.getWriter();
 %>
 
+<%
+    Account loggedInAccount = (Account) session.getAttribute("account");
+    List<Role> accountRoles = roleRepository.findRolesByAccountId(loggedInAccount.getAccount_id());
+
+    if (loggedInAccount != null && accountRoles.contains(new Role(1l, "", "", 1))) {
+%>
+
 <p>id: <%= account.getAccount_id() %>
 </p>
 <p>fullName: <%= account.getFullName() %>
@@ -190,6 +197,10 @@
 </p>
 <p>status: <%= getStatusString(account.getStatus()) %>
 </p>
+
+<%
+    }
+%>
 
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal">
