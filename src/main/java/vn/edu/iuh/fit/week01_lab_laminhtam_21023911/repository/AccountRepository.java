@@ -84,6 +84,17 @@ public class AccountRepository {
         return ps.executeUpdate();
     }
 
+    public int updateAccount(Account account) throws Exception {
+        String sql = "update Account set fullname = ?, password = ?, email = ?, phone = ? where account_id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1, account.getFullName());
+        ps.setString(2, account.getPassword());
+        ps.setString(3, account.getEmail());
+        ps.setString(4, account.getPhone());
+        ps.setLong(5, account.getAccount_id());
+        return ps.executeUpdate();
+    }
+
     public int updateName(Account account) throws Exception {
         String sql = "update Account set fullname = ? where account_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);

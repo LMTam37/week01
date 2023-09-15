@@ -8,15 +8,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Account;
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Grant_access;
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Role;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.AccountRepository;
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.Grant_accessRepository;
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.RoleRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet(urlPatterns = "/ControlServlet")
 public class ControlServlet extends HttpServlet {
     AccountRepository accountRepository = new AccountRepository();
+    Grant_accessRepository grantAccessRepository = new Grant_accessRepository();
+    RoleRepository roleRepository = new RoleRepository();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -35,19 +43,58 @@ public class ControlServlet extends HttpServlet {
                 case "add-account":
                     handleAddAccount(req, resp);
                     break;
+                case "update-account":
+                    handleUpdateAccount(req, resp);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private boolean handleAddAccount(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    private Account extractAccountFromRequest(HttpServletRequest req) {
         Long id = Long.valueOf(req.getParameter("account_id"));
         String fullName = req.getParameter("fullName");
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         String phone = req.getParameter("phone");
-        Account account = new Account(id, fullName, password, email, phone, 1);
+        return new Account(id, fullName, password, email, phone, 1);
+    }
+
+    private boolean handleUpdateAccount(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            Account account = extractAccountFromRequest(req);
+
+            String[] selectedRoles = req.getParameterValues("roles");
+
+            updateGrantAccess(account.getAccount_id(), selectedRoles);
+
+            accountRepository.updateAccount(account);
+
+            RequestDispatcher rd = req.getRequestDispatcher("dashboard.jsp");
+            rd.forward(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private void updateGrantAccess(Long accountId, String[] selectedRoles) throws Exception {
+        List<Role> allRoles = roleRepository.findAll();
+
+        for (Role role : allRoles) {
+            Long roleId = role.getRole_id();
+            boolean isCheck = selectedRoles != null && Arrays.asList(selectedRoles).contains(roleId.toString());
+
+            Grant_access grantAccess = new Grant_access(accountId, roleId, isCheck, "");
+            grantAccessRepository.updateIs_grant(grantAccess);
+        }
+    }
+
+    private boolean handleAddAccount(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        Account account = extractAccountFromRequest(req);
+
         if (!validateNewAccount(account)) {
             resp.getWriter().println("Account already exists");
             return false;

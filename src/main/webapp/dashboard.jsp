@@ -37,6 +37,68 @@
 %>
 
 <%!
+    public String generateAccountDetailsModal(Account curAccount, List<Role> allRoles) {
+        StringBuilder modalHtml = new StringBuilder();
+        modalHtml.append("<div class=\"modal fade\" id=\"modal").append(curAccount.getAccount_id()).append("\" tabindex=\"-1\" aria-labelledby=\"modalLabel\" aria-hidden=\"true\">")
+                .append("<div class=\"modal-dialog\">")
+                .append("<div class=\"modal-content\">")
+                .append("<form action=\"ControlServlet\" method=\"post\">")
+                .append("<input type=\"hidden\" name=\"action\" value=\"update-account\">")
+
+                .append("<div class=\"modal-header\">")
+                .append("<h5 class=\"modal-title\" id=\"modalLabel\">Account Details</h5>")
+                .append("<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>")
+                .append("</div>")
+
+                .append("<div class=\"modal-body\">")
+                .append("<div class=\"mb-3\">")
+                .append("<label for=\"idInput\" class=\"form-label\">ID</label>")
+                .append("<input class=\"form-control\" id=\"idInput\" name=\"account_id\" type=\"text\" value=\"").append(curAccount.getAccount_id()).append("\" readonly>")
+                .append("</div>")
+                .append("<div class=\"mb-3\">")
+                .append("<label for=\"fullNameInput\" class=\"form-label\">Full Name</label>")
+                .append("<input class=\"form-control\" id=\"fullNameInput\" name=\"fullName\" type=\"text\" value=\"").append(curAccount.getFullName()).append("\">")
+                .append("</div>")
+                .append("<div class=\"mb-3\">")
+                .append("<label for=\"passwordInput\" class=\"form-label\">Password</label>")
+                .append("<input class=\"form-control\" id=\"passwordInput\" name=\"password\" type=\"text\" value=\"").append(curAccount.getPassword()).append("\">")
+                .append("</div>")
+                .append("<div class=\"mb-3\">")
+                .append("<label for=\"emailInput\" class=\"form-label\">Email</label>")
+                .append("<input class=\"form-control\" id=\"emailInput\" name=\"email\" type=\"email\" value=\"").append(curAccount.getEmail()).append("\">")
+                .append("</div>")
+                .append("<div class=\"mb-3\">")
+                .append("<label for=\"phoneInput\" class=\"form-label\">Phone</label>")
+                .append("<input class=\"form-control\" id=\"phoneInput\" name=\"phone\" type=\"text\" value=\"").append(curAccount.getPhone()).append("\">")
+                .append("</div>")
+                .append("<p>Status: ").append(getStatusString(curAccount.getStatus())).append("</p>");
+
+        for (Role role : allRoles) {
+            modalHtml.append("<div class=\"form-check form-check-inline\">")
+                    .append("<input class=\"form-check-input\" id=\"account").append(curAccount.getAccount_id()).append("Role").append(role.getRole_id()).append("\" type=\"checkbox\" name=\"roles\" value=\"").append(role.getRole_id()).append("\"/>")
+                    .append("<label class=\"form-check-label\" for=\"account").append(curAccount.getAccount_id()).append("Role").append(role.getRole_id()).append("\">")
+                    .append(role.getRole_name())
+                    .append("</label>")
+                    .append("</div>");
+        }
+
+        modalHtml.append("</div>")
+                .append("<div class=\"modal-footer\">")
+                .append("<button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>")
+                .append("<input type=\"submit\" class=\"btn btn-primary\" value=\"update account\">")
+                .append("</div>")
+
+                .append("</form>")
+                .append("</div>")
+                .append("</div>")
+                .append("</div>");
+
+        return modalHtml.toString();
+    }
+%>
+
+
+<%!
     public List<Long> getGrantedRoleIdsForAccount(Long accountId) {
         List<Long> grantedRoles = new ArrayList<>();
         for (Grant_access grantAccess : allGrantAccesses) {
@@ -77,12 +139,15 @@
     AccountRepository accountRepository = new AccountRepository();
     Grant_accessRepository grantAccessRepository = new Grant_accessRepository();
     RoleRepository roleRepository = new RoleRepository();
-    List<Account> allAccount = accountRepository.findAll();
-    List<Grant_access> allGrantAccesses = grantAccessRepository.findAll();
-    List<Role> allRoles = roleRepository.findAll();
+    List<Account> allAccount = new ArrayList<>();
+    List<Grant_access> allGrantAccesses = new ArrayList<>();
+    List<Role> allRoles = new ArrayList<>();
 %>
 
 <%
+    allAccount = accountRepository.findAll();
+    allGrantAccesses = grantAccessRepository.findAll();
+    allRoles = roleRepository.findAll();
     Account account = (Account) session.getAttribute("account");
     PrintWriter printWriter = response.getWriter();
 %>
@@ -102,7 +167,6 @@
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal">
     add account
 </button>
-<% Account newAccount = new Account(); %>
 <!-- Modal -->
 <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
     <div class="modal-dialog">
@@ -148,6 +212,7 @@
     <th>phone</th>
     <th>status</th>
     <th>role</th>
+    <th>action</th>
     </thead>
     <tbody>
     <%
@@ -177,6 +242,13 @@
         <td>
             <%= getRoleNamesForAccount(curAccount.getAccount_id()) %>
         </td>
+        <td>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#modal<%=curAccount.getAccount_id()%>">
+                update
+            </button>
+        </td>
+        <%= generateAccountDetailsModal(curAccount, allRoles)%>
     </tr>
     <%
         }
