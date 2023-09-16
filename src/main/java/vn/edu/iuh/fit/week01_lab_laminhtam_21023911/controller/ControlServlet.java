@@ -9,14 +9,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Account;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Grant_access;
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Log;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.model.Role;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.AccountRepository;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.Grant_accessRepository;
+import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.LogRepository;
 import vn.edu.iuh.fit.week01_lab_laminhtam_21023911.repository.RoleRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +29,7 @@ public class ControlServlet extends HttpServlet {
     AccountRepository accountRepository = new AccountRepository();
     Grant_accessRepository grantAccessRepository = new Grant_accessRepository();
     RoleRepository roleRepository = new RoleRepository();
+    LogRepository logRepository = new LogRepository();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -46,10 +51,34 @@ public class ControlServlet extends HttpServlet {
                 case "update-account":
                     handleUpdateAccount(req, resp);
                     break;
+                case "logout":
+                    handleLogout(req, resp);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean handleLogout(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            HttpSession session = req.getSession();
+
+            Account account = (Account) session.getAttribute("account");
+
+            Long logId = logRepository.getLogsToLogout(account.getAccount_id());
+
+            Log log = new Log(logId, account.getAccount_id(), null, new Date(System.currentTimeMillis()), null);
+            logRepository.updateLogoutDate(log);
+
+            session.removeAttribute("account");
+            RequestDispatcher rd = req.getRequestDispatcher("index.jsp");
+            rd.forward(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     private Account extractAccountFromRequest(HttpServletRequest req) {
@@ -140,6 +169,10 @@ public class ControlServlet extends HttpServlet {
             resp.getWriter().println("Wrong password");
             return false;
         }
+
+        Log log = new Log(account.get().getAccount_id(), new Date(System.currentTimeMillis()), null, "");
+        logRepository.add(log);
+
         HttpSession session = req.getSession();
         session.setAttribute("account", account.get());
         RequestDispatcher rd = req.getRequestDispatcher("dashboard.jsp");

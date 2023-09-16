@@ -20,6 +20,13 @@ public class Log {
         this.description = description;
     }
 
+    public Log(Long account_id, Date login_date, Date logout_date, String description) {
+        this.account_id = account_id;
+        this.login_date = login_date;
+        this.logout_date = logout_date;
+        this.description = description;
+    }
+
     public Long getLog_id() {
         return log_id;
     }

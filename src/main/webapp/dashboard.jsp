@@ -329,5 +329,9 @@
     </tbody>
 </table>
 
+<form action="ControlServlet" method="post">
+    <input type="hidden" name="action" value="logout">
+    <input type="submit" class="btn btn-danger" value="logout">
+</form>
 </body>
 </html>
